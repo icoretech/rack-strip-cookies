@@ -20,7 +20,7 @@ Or install it yourself as:
 
 This library has been tested on Rails 3.2 and 4.0.
 
-To make the middleware available in alle environments, open `config/application.rb` and add in `class Application < Rails::Application`:
+To make the middleware available in all environments, open `config/application.rb` and add in `class Application < Rails::Application`:
 
 ```ruby
 config.middleware.insert_before(ActionDispatch::Cookies, Rack::StripCookies, paths: %w(/oauth2/token))

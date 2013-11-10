@@ -3,8 +3,11 @@ require 'minitest/spec'
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/test'
+require 'coveralls'
 
 require_relative '../lib/rack/strip-cookies'
+
+Coveralls.wear!
 
 describe Rack::StripCookies do
   include Rack::Test::Methods

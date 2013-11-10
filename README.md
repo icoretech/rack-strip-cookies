@@ -16,9 +16,17 @@ Or install it yourself as:
 
     $ gem install rack-strip-cookies
 
-## Ruby on Rails
+## Concept
 
-This library has been tested on Rails 3.2 and 4.0.
+The goal of this gem is not only avoid serving a cookie to a client through the Set-Cookie header, but also to erase cookies sent in the request. In other words the client-sent cookies will not make it to your application layer, provided the middleware is loaded in the correct place in the stack.
+
+## Use cases
+
+- You have a buggy third party library that raises exception when cookies are sent in a request, such as an authentication engine.
+- You are looking for a cheap way to not mess with session cookie disabilitation in your framework.
+- Selectively shut down cookies on specific paths, configurable when adding the middleware.
+
+## Ruby on Rails
 
 To make the middleware available in all environments, open `config/application.rb` and add in `class Application < Rails::Application`:
 

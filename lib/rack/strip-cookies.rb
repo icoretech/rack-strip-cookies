@@ -1,18 +1,16 @@
 module Rack
   class StripCookies
+    attr_reader :paths
+
     def initialize(app, options = {})
-      default_options = {
-        paths: []
-      }
-      @app, @options = app, default_options.merge(options)
+      @app, @paths = app, Array(options[:paths])
     end
 
     def call(env)
-      if @options[:paths].include?(Rack::Request.new(env).path)
+      if paths.include?(Rack::Request.new(env).path)
         env.delete('HTTP_COOKIE')
       end
       @app.call(env)
-
-      env.delete('HTTP_COOKIE')
     end
   end
+end

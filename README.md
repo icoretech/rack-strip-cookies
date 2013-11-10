@@ -1,4 +1,4 @@
-# Rack::Strip::Cookies [![Build Status](https://secure.travis-ci.org/icoretech/rack-strip-cookies.png)](https://travis-ci.org/icoretech/rack-strip-cookies?branch=master) [![Coverage Status](https://coveralls.io/repos/icoretech/rack-strip-cookies/badge.png)](https://coveralls.io/r/icoretech/rack-strip-cookies) [![Dependency Status](https://gemnasium.com/icoretech/rack-strip-cookies.png)](https://gemnasium.com/icoretech/rack-strip-cookies)
+# Rack::StripCookies [![Build Status](https://secure.travis-ci.org/icoretech/rack-strip-cookies.png)](https://travis-ci.org/icoretech/rack-strip-cookies?branch=master) [![Coverage Status](https://coveralls.io/repos/icoretech/rack-strip-cookies/badge.png)](https://coveralls.io/r/icoretech/rack-strip-cookies) [![Dependency Status](https://gemnasium.com/icoretech/rack-strip-cookies.png)](https://gemnasium.com/icoretech/rack-strip-cookies)
 
 Simple Rack middleware to remove cookies at specified paths.
 

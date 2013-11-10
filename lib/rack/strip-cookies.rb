@@ -7,10 +7,16 @@ module Rack
     end
 
     def call(env)
-      if paths.include?(Rack::Request.new(env).path)
-        env.delete('HTTP_COOKIE')
+      path = Rack::Request.new(env).path
+      status, headers, body = @app.call(env)
+
+      if paths.include?(path)
+        headers.delete('Set-Cookie')
+        # request.session_options[:skip] = true
+        # env.delete('HTTP_COOKIE')
       end
-      @app.call(env)
+
+      [status, headers, body]
     end
   end
 end

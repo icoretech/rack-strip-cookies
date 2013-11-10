@@ -36,6 +36,8 @@ config.middleware.insert_before(ActionDispatch::Cookies, Rack::StripCookies, pat
 
 If you want to customize the environment in which the middleware is enabled edit the respective environment files instead.
 
+You can verify the middleware positioning by typing `rake middleware` in the root of your application.
+
 ## Contributing
 
 1. Fork it

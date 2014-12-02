@@ -8,7 +8,7 @@ module Rack
 
     def call(env)
       path     = Rack::Request.new(env).path
-      included = paths.include?(path)
+      included = paths.any? { |s| path.include?(s)}
 
       env.delete('HTTP_COOKIE') if included
 

@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'minitest/spec'
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/test'
@@ -9,10 +8,6 @@ require_relative '../lib/rack/strip-cookies'
 
 Coveralls.wear!
 
-RSpec.configure do |config|
-  config.expect_with :minitest
-end
-
 describe Rack::StripCookies do
   include Rack::Test::Methods
 
@@ -20,7 +15,7 @@ describe Rack::StripCookies do
 
   def mock_app(options_or_options_array = {})
     main_app = lambda { |env|
-      request = Rack::Request.new(env)
+      _request = Rack::Request.new(env)
       headers = {'Content-Type' => "text/html"}
       headers['Set-Cookie'] = "id=1; path=/oauth/token; secure; HttpOnly"
       [200, headers, ['Hello there']]

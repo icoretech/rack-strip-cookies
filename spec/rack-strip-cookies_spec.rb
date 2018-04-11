@@ -9,6 +9,10 @@ require_relative '../lib/rack/strip-cookies'
 
 Coveralls.wear!
 
+RSpec.configure do |config|
+  config.expect_with :minitest
+end
+
 describe Rack::StripCookies do
   include Rack::Test::Methods
 
@@ -37,11 +41,11 @@ describe Rack::StripCookies do
 
   it 'does not clean the cookie on another path' do
     get 'http://www.example.org/oauth'
-    last_response.headers['Set-Cookie'].split("\n").must_equal(["id=1; path=/oauth/token; secure; HttpOnly"])
+    assert_equal last_response.headers['Set-Cookie'].split("\n"), ["id=1; path=/oauth/token; secure; HttpOnly"], "cookie is present"
   end
 
   it 'clean the cookie' do
     get 'http://www.example.org/oauth/token'
-    last_response.headers['Set-Cookie'].must_equal(nil)
+    assert_nil last_response.headers['Set-Cookie'], "cookie is missing"
   end
 end

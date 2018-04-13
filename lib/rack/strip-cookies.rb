@@ -21,6 +21,8 @@ module Rack
       status, headers, body = @app.call(env)
       headers.delete('Set-Cookie') if strip_out
 
+      # insert a header if cookies where stripped for the request.
+      headers = headers.merge("Cookies-Stripped" => "true") if strip_out
       [status, headers, body]
     end
   end

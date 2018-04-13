@@ -35,6 +35,7 @@ describe Rack::StripCookies do
 
     get 'http://www.example.org/oauth'
     assert_equal last_response.headers['Set-Cookie'].split("\n"), ["id=1; path=/oauth/token; secure; HttpOnly"], "cookie is present"
+    assert_nil last_response.headers['Cookies-Stripped'], "Cookies are not stripped"
   end
 
   it 'clean the cookie' do
@@ -42,6 +43,7 @@ describe Rack::StripCookies do
 
     get 'http://www.example.org/oauth/token'
     assert_nil last_response.headers['Set-Cookie'], "cookie is missing"
+    assert_equal last_response.headers['Cookies-Stripped'], "true", "Cookies are stripped"
   end
 
   it 'clean the cookie on all other paths' do
@@ -49,6 +51,7 @@ describe Rack::StripCookies do
 
     get "http://www.example.org/outh#{rand(10)}"
     assert_nil last_response.headers['Set-Cookie'], "cookie is missing"
+    assert_equal last_response.headers['Cookies-Stripped'], "true", "Cookies are stripped"
   end
 
   it 'dont clean the cookie on given path' do
@@ -56,5 +59,6 @@ describe Rack::StripCookies do
 
     get 'http://www.example.org/oauth/token'
     assert_equal last_response.headers['Set-Cookie'].split("\n"), ["id=1; path=/oauth/token; secure; HttpOnly"], "cookie is present"
+    assert_nil last_response.headers['Cookies-Stripped'], "Cookies are not stripped"
   end
 end

@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'minitest/spec'
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/test'
@@ -16,7 +15,7 @@ describe Rack::StripCookies do
 
   def mock_app(options_or_options_array = {})
     main_app = lambda { |env|
-      request = Rack::Request.new(env)
+      _request = Rack::Request.new(env)
       headers = {'Content-Type' => "text/html"}
       headers['Set-Cookie'] = "id=1; path=/oauth/token; secure; HttpOnly"
       [200, headers, ['Hello there']]
@@ -31,17 +30,35 @@ describe Rack::StripCookies do
     @app = builder.to_app
   end
 
-  before do
-    mock_app(paths: ["/oauth/token"])
-  end
-
   it 'does not clean the cookie on another path' do
+    mock_app(paths: ["/oauth/token"])
+
     get 'http://www.example.org/oauth'
-    last_response.headers['Set-Cookie'].split("\n").must_equal(["id=1; path=/oauth/token; secure; HttpOnly"])
+    assert_equal last_response.headers['Set-Cookie'].split("\n"), ["id=1; path=/oauth/token; secure; HttpOnly"], "cookie is present"
+    assert_nil last_response.headers['Cookies-Stripped'], "Cookies are not stripped"
   end
 
   it 'clean the cookie' do
+    mock_app(paths: ["/oauth/token"])
+
     get 'http://www.example.org/oauth/token'
-    last_response.headers['Set-Cookie'].must_equal(nil)
+    assert_nil last_response.headers['Set-Cookie'], "cookie is missing"
+    assert_equal last_response.headers['Cookies-Stripped'], "true", "Cookies are stripped"
+  end
+
+  it 'clean the cookie on all other paths' do
+    mock_app(paths: ["/oauth/token"], invert: true)
+
+    get "http://www.example.org/outh#{rand(10)}"
+    assert_nil last_response.headers['Set-Cookie'], "cookie is missing"
+    assert_equal last_response.headers['Cookies-Stripped'], "true", "Cookies are stripped"
+  end
+
+  it 'dont clean the cookie on given path' do
+    mock_app(paths: ["/oauth/token"], invert: true)
+
+    get 'http://www.example.org/oauth/token'
+    assert_equal last_response.headers['Set-Cookie'].split("\n"), ["id=1; path=/oauth/token; secure; HttpOnly"], "cookie is present"
+    assert_nil last_response.headers['Cookies-Stripped'], "Cookies are not stripped"
   end
 end

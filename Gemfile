@@ -18,5 +18,6 @@ end
 
 group :test do
   gem 'rack-test'
+  gem 'minitest'
   gem 'coveralls', require: false
 end

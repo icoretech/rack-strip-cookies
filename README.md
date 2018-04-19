@@ -1,6 +1,6 @@
 # Rack::StripCookies [![Build Status](https://secure.travis-ci.org/icoretech/rack-strip-cookies.png)](https://travis-ci.org/icoretech/rack-strip-cookies?branch=master)
 
-Simple Rack middleware to remove cookies at specified paths.
+Simple Rack middleware to remove cookies at specified paths or to remove cookies from all paths except at specified paths.
 
 ## Installation
 
@@ -34,10 +34,19 @@ To make the middleware available in all environments, open `config/application.r
 config.middleware.insert_before(ActionDispatch::Cookies, Rack::StripCookies, paths: %w(/oauth2/token))
 ```
 
+To remove cookies from all requests except those using /session(/*) path, add invert:true option.
+
+```ruby
+config.middleware.insert_before(ActionDispatch::Cookies, Rack::StripCookies, paths: %w(/session), invert: true)
+```
+
 If you want to customize the environment in which the middleware is enabled edit the respective environment files instead.
+
 
 You can verify the middleware positioning by typing `rake middleware` in the root of your application.
 
+The responses for the requests with cookies stripped out will also have "Cookies-Stripper: true" header.
+ 
 ## Contributing
 
 1. Fork it

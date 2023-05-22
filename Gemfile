@@ -2,19 +2,9 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "rake"
+rack_branch = ENV["RACK"] || "3-0-stable"
 
-github = "https://github.com/%s.git"
-repos = {"rack" => github % "rack/rack"}
-
-%w[rack].each do |lib|
-  dep = case ENV[lib]
-  when "stable", nil then nil
-  when /(\d+\.)+\d+/ then "~> " + ENV[lib].sub("#{lib}-", "")
-  else {git: repos[lib], branch: dep}
-  end
-  gem lib, dep
-end
+gem "rack", git: "https://github.com/rack/rack.git", ref: rack_branch || rack_version
 
 group :test do
   gem "rack-test"

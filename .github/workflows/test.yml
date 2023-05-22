@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         rvm: ["3.0", "3.1", "3.2", "ruby-head"]
-        rack: ["3.0.7", "main"]
+        rack: ["3-0-stable"]
 
     runs-on: ubuntu-latest
 

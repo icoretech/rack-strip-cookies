@@ -15,7 +15,10 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files`.split("\x0")
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "rack", ">= 3.0"
+
   spec.add_development_dependency "bundler", ">= 2.2"
-  spec.add_development_dependency "rack", ">= 3.0.7"
   spec.add_development_dependency "rack-test", ">= 2.1.0"
+  spec.add_development_dependency "rake", ">= 13.0.6"
+  spec.add_development_dependency "minitest", ">= 5.18.0"
 end

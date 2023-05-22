@@ -5,8 +5,9 @@ module Rack
     # Initializes the middleware.
     #
     # @param app [Rack application] The Rack application.
-    # @param paths [Array<String>] The paths where cookies should be deleted.
-    # @param invert [Boolean] Whether to invert the paths where cookies are deleted.
+    # @param options [Hash] The options to customize the middleware behavior.
+    # @option options [Array<String>] :paths The paths where cookies should be deleted.
+    # @option options [Boolean] :invert Whether to invert the paths where cookies are deleted.
     def initialize(app, options = {})
       @app = app
       @paths = Array(options[:paths])

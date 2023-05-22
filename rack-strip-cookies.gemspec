@@ -20,5 +20,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler',   '~> 2.0'
   spec.add_development_dependency 'rack',      '~> 1.2'
-  spec.add_development_dependency 'rack-test', '~> 0.6.2'
+  spec.add_development_dependency 'rack-test', '~> 2.1.0'
 end

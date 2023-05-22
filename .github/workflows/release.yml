@@ -11,14 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Configure Git Identity
-        run: |
-          git config --global user.email "${{ secrets.GIT_EMAIL }}"
-          git config --global user.name "${{ secrets.GIT_USERNAME }}"
-        env:
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
       - name: Release Gem
         uses: cadwallion/publish-rubygems-action@master
         env:
-          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}

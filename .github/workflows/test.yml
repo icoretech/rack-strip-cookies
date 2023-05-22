@@ -1,12 +1,10 @@
-name: Test and Release
+name: Test
 
 on:
   push:
     branches:
       - main
       - master
-    tags:
-      - v*
   pull_request:
     branches:
       - main
@@ -38,9 +36,3 @@ jobs:
 
       - name: Run tests
         run: bundle exec rake test
-
-      - name: Release Gem
-        if: contains(github.ref, 'refs/tags/v')
-        uses: cadwallion/publish-rubygems-action@master
-        env:
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}

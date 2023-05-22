@@ -1,28 +1,45 @@
 module Rack
   class StripCookies
-    attr_reader :paths
-    attr_reader :invert
+    attr_reader :app, :paths, :invert
 
-    def initialize(app, options = {invert: false})
-      @app, @paths, @invert = app, Array(options[:paths]), options[:invert] == true
+    # Initializes the middleware.
+    #
+    # @param app [Rack application] The Rack application.
+    # @param paths [Array<String>] The paths where cookies should be deleted.
+    # @param invert [Boolean] Whether to invert the paths where cookies are deleted.
+    def initialize(app, options = {})
+      @app = app
+      @paths = Array(options[:paths])
+      @invert = options[:invert] || false
     end
 
+    # Entry point of the middleware.
+    #
+    # @param env [Hash] The request environment.
+    # @return [Array] The response containing the status, headers, and body.
     def call(env)
-      path     = Rack::Request.new(env).path
-      included = paths.any? { |s| path.include?(s)}
+      # Extract the path from the request
+      path = Rack::Request.new(env).path
 
-      # Strip cookies from all requests
-      # 1) that are mentioned in paths and invert is false. or
-      # 2) that are not mentioned in paths and invert is true.
+      # Check if the request path is in the list of paths to be stripped
+      included = paths.any? { |s| path.include?(s) }
+
+      # Decide whether to strip cookies based on the request path and the invert flag
       strip_out = ((included && !invert) || (!included && invert))
 
-      env.delete('HTTP_COOKIE') if strip_out
+      # If cookies are to be stripped, delete the HTTP_COOKIE from the request environment
+      env.delete("HTTP_COOKIE".freeze) if strip_out
 
+      # Call the next middleware/app and get the status, headers, and body of the response
       status, headers, body = @app.call(env)
-      headers.delete('Set-Cookie') if strip_out
 
-      # insert a header if cookies where stripped for the request.
-      headers = headers.merge("Cookies-Stripped" => "true") if strip_out
+      # If cookies are to be stripped, delete the Set-Cookie header from the response
+      headers.delete("set-cookie".freeze) if strip_out
+
+      # If cookies were stripped, insert a custom header indicating that fact
+      headers["cookies-stripped".freeze] = "true" if strip_out
+
+      # Return the response (status, headers, body) to the next middleware or the web server
       [status, headers, body]
     end
   end

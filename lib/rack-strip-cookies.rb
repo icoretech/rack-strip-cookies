@@ -1,1 +1,1 @@
-require 'rack/strip-cookies'
+require "rack/strip-cookies"

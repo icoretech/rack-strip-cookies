@@ -1,23 +1,22 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
-gem 'rake'
+gem "rake"
 
-github = 'git://github.com/%s.git'
-repos  = { 'rack' => github % 'rack/rack' }
+github = "https://github.com/%s.git"
+repos = {"rack" => github % "rack/rack"}
 
-%w(rack).each do |lib|
+%w[rack].each do |lib|
   dep = case ENV[lib]
-        when 'stable', nil then nil
-        when /(\d+\.)+\d+/ then '~> ' + ENV[lib].sub("#{lib}-", '')
-        else { git: repos[lib], branch: dep }
-        end
+  when "stable", nil then nil
+  when /(\d+\.)+\d+/ then "~> " + ENV[lib].sub("#{lib}-", "")
+  else {git: repos[lib], branch: dep}
+  end
   gem lib, dep
 end
 
 group :test do
-  gem 'rack-test'
-  gem 'minitest'
-  gem 'coveralls', require: false
+  gem "rack-test"
+  gem "minitest"
 end

@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "http://github.com/icoretech/rack-strip-cookies"
   spec.license = "MIT"
 
-  spec.files = `git ls-files`.split("\x0")
+  spec.files = Dir.glob("lib/**/*.rb")
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "rack", ">= 3.0"

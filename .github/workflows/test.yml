@@ -1,4 +1,4 @@
-name: Test
+name: Test and Release
 
 on:
   push:
@@ -40,6 +40,4 @@ jobs:
         if: contains(github.ref, 'refs/tags/v')
         uses: cadwallion/publish-rubygems-action@master
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
-          RELEASE_COMMAND: rake release

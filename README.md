@@ -12,7 +12,7 @@ To include this gem in your project, add the following line to your Gemfile:
 # source "https://rubygems.org"
 # git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rack-strip-cookies', github: 'icoretech/rack-strip-cookies'
+gem 'rack-strip-cookies', '~> 1.0.0'
 ```
 
 Then, run the bundle command:

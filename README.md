@@ -9,9 +9,6 @@ Rack::StripCookies is a straightforward Rack middleware that deletes cookies at 
 To include this gem in your project, add the following line to your Gemfile:
 
 ```ruby
-# source "https://rubygems.org"
-# git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-
 gem 'rack-strip-cookies', '~> 1.0.0'
 ```
 

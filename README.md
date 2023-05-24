@@ -2,6 +2,11 @@
 
 Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths.
 
+[![Gem Version](https://badge.fury.io/rb/rack-strip-cookies.svg)](https://badge.fury.io/rb/rack-strip-cookies)
+![Git Tag](http://img.shields.io/github/tag/icoretech/rack-strip-cookies.svg)
+![Licence](http://img.shields.io/badge/license-MIT-brightgreen.svg)
+[![Build Status](https://github.com/icoretech/rack-strip-cookies/actions/workflows/release.yml/badge.svg)](https://github.com/icoretech/rack-strip-cookies/actions/workflows/release.yml)
+
 ## Getting Started
 
 ### Installation

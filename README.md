@@ -1,6 +1,6 @@
 # Rack::StripCookies
 
-Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths.
+Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths, including support for wildcard patterns. This allows for flexible and selective cookie management across various parts of your application.
 
 [![Gem Version](https://badge.fury.io/rb/rack-strip-cookies.svg)](https://badge.fury.io/rb/rack-strip-cookies)
 ![Git Tag](http://img.shields.io/github/tag/icoretech/rack-strip-cookies.svg)
@@ -19,6 +19,7 @@ Rack::StripCookies is a straightforward Rack middleware that deletes cookies at 
   - [Using with Sinatra](#using-with-sinatra)
   - [Using with Padrino](#using-with-padrino)
   - [Advanced Configuration Options](#advanced-configuration-options)
+    - [Wildcard Path Patterns](#wildcard-path-patterns)
     - [Inverting Path Matching](#inverting-path-matching)
     - [Multiple Paths](#multiple-paths)
   - [Combining with Other Middleware](#combining-with-other-middleware)
@@ -40,7 +41,7 @@ gem 'rack-strip-cookies', '~> 1.0.5'
 Then, run the bundle command:
 
 ```sh
-bundle
+bundle install
 ```
 
 ## Overview
@@ -51,7 +52,7 @@ The primary aim of this gem is to not only prevent a client from receiving a coo
 
 - **Defective Third-Party Libraries**: If a third-party library in your application is defective and throws an exception when cookies are present in a request (e.g., an authentication engine), this gem can be helpful.
 - **Disable Session Cookies**: Provides a simple solution if you need to disable session cookies in your framework.
-- **Selective Cookie Management**: Allows you to selectively disable cookies on specific paths, which can be configured when integrating the middleware.
+- **Selective Cookie Management**: Allows you to selectively disable cookies on specific paths or patterns, which can be configured when integrating the middleware.
 
 ## Usage Examples
 
@@ -169,29 +170,60 @@ end
 
 `Rack::StripCookies` provides additional configuration options to customize its behavior further.
 
+#### Wildcard Path Patterns
+
+You can define wildcard patterns to strip cookies from multiple subpaths matching a specific pattern.
+
+```ruby
+use Rack::StripCookies, paths: ['/api/*', '/admin/*']
+```
+
+**Explanation:**
+
+- **`/api/*`**: Strips cookies from `/api/`, `/api/users`, `/api/v1/orders`, etc.
+- **`/admin/*`**: Strips cookies from `/admin/`, `/admin/settings`, `/admin/users/list`, etc.
+
+**Example Usage with Wildcards:**
+
+```ruby
+# config.ru
+require 'rack'
+require 'rack/strip-cookies'
+
+app = Proc.new do |env|
+  headers = { "Content-Type" => "text/html" }
+  headers["Set-Cookie"] = "user_id=12345; path=#{env['PATH_INFO']}; HttpOnly"
+  [200, headers, ["Welcome"]]
+end
+
+use Rack::StripCookies, paths: ['/api/*', '/admin/*']
+
+run app
+```
+
 #### Inverting Path Matching
 
 You can invert the path matching logic to strip cookies on all paths *except* the ones specified.
 
 ```ruby
-use Rack::StripCookies, paths: ['/public', '/health'], invert: true
+use Rack::StripCookies, paths: ['/public/*', '/health'], invert: true
 ```
 
 **Explanation:**
 
-- Cookies will be stripped from all paths **except** `/public` and `/health`.
+- Cookies will be stripped from all paths **except** those matching `/public/*` (e.g., `/public/images`, `/public/css`) and the exact path `/health`.
 
 #### Multiple Paths
 
-Specify multiple paths where cookies should be stripped.
+Specify multiple exact paths and wildcard patterns where cookies should be stripped.
 
 ```ruby
-use Rack::StripCookies, paths: ['/login', '/signup', '/dashboard']
+use Rack::StripCookies, paths: ['/login', '/signup', '/dashboard/*']
 ```
 
 **Explanation:**
 
-- Cookies will be stripped from requests and responses to `/login`, `/signup`, and `/dashboard`.
+- Cookies will be stripped from `/login`, `/signup`, and any subpath under `/dashboard/` (e.g., `/dashboard/settings`, `/dashboard/profile`).
 
 ### Combining with Other Middleware
 
@@ -199,7 +231,7 @@ You can combine `Rack::StripCookies` with other Rack middleware to build a robus
 
 ```ruby
 use Rack::Logger
-use Rack::StripCookies, paths: ['/secure', '/private']
+use Rack::StripCookies, paths: ['/secure', '/private/*']
 use Rack::Static, urls: ['/images'], root: 'public'
 use Rack::Session::Cookie, secret: 'your_secret_key'
 
@@ -208,10 +240,10 @@ run YourApp::Application
 
 **Explanation:**
 
-- `Rack::Logger`: Logs each request.
-- `Rack::StripCookies`: Strips cookies for `/secure` and `/private` paths.
-- `Rack::Static`: Serves static files from the `public` directory.
-- `Rack::Session::Cookie`: Manages session cookies with a secret key.
+- **`Rack::Logger`**: Logs each request.
+- **`Rack::StripCookies`**: Strips cookies for `/secure` and any subpaths under `/private/`.
+- **`Rack::Static`**: Serves static files from the `public` directory.
+- **`Rack::Session::Cookie`**: Manages session cookies with a secret key.
 
 ## Running Tests Locally
 

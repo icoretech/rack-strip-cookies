@@ -1,3 +1,4 @@
+# spec/rack-strip-cookies_spec.rb
 require "rubygems"
 require "minitest/autorun"
 require "rack/mock"

@@ -1,3 +1,4 @@
+# lib/rack/strip-cookies.rb
 module Rack
   class StripCookies
     attr_reader :app, :paths, :invert
@@ -26,7 +27,7 @@ module Rack
       included = paths.any? { |s| path.include?(s) }
 
       # Decide whether to strip cookies based on the request path and the invert flag
-      strip_out = ((included && !invert) || (!included && invert))
+      strip_out = (included && !invert) || (!included && invert)
 
       # If cookies are to be stripped, delete the HTTP_COOKIE from the request environment
       env.delete("HTTP_COOKIE".freeze) if strip_out

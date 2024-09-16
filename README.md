@@ -7,6 +7,26 @@ Rack::StripCookies is a straightforward Rack middleware that deletes cookies at 
 ![Licence](http://img.shields.io/badge/license-MIT-brightgreen.svg)
 [![Build Status](https://github.com/icoretech/rack-strip-cookies/actions/workflows/release.yml/badge.svg)](https://github.com/icoretech/rack-strip-cookies/actions/workflows/release.yml)
 
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+- [Overview](#overview)
+- [Usage Scenarios](#usage-scenarios)
+- [Usage Examples](#usage-examples)
+  - [Using with Rack Alone](#using-with-rack-alone)
+  - [Integrating with Ruby on Rails](#integrating-with-ruby-on-rails)
+  - [Using with Sinatra](#using-with-sinatra)
+  - [Using with Padrino](#using-with-padrino)
+  - [Advanced Configuration Options](#advanced-configuration-options)
+    - [Inverting Path Matching](#inverting-path-matching)
+    - [Multiple Paths](#multiple-paths)
+  - [Combining with Other Middleware](#combining-with-other-middleware)
+- [Running Tests Locally](#running-tests-locally)
+- [How to Contribute](#how-to-contribute)
+- [License](#license)
+- [Contact](#contact)
+
 ## Getting Started
 
 ### Installation

@@ -13,11 +13,11 @@ describe Rack::StripCookies do
 
   def app = Rack::Lint.new(@app)
 
-  def mock_app(options_or_options_array = {})
+  def mock_app(options_or_options_array = {}, set_cookie_header = "set-cookie")
     main_app = lambda { |env|
       request = Rack::Request.new(env)
       headers = {"content-type" => "text/html"}
-      headers["set-cookie"] = "id=1; path=#{request.path}; secure; HttpOnly"
+      headers[set_cookie_header] = "id=1; path=#{request.path}; secure; HttpOnly"
       [200, headers, ["Hello there"]]
     }
 
@@ -44,6 +44,17 @@ describe Rack::StripCookies do
     get "http://www.example.org/oauth/token"
     _(last_response.headers["set-cookie"]).must_be_nil
     _(last_response.headers["cookies-stripped"]).must_equal "true"
+  end
+
+  it "cleans the cookie when response hash uses Set-Cookie casing" do
+    app = Rack::StripCookies.new(
+      lambda { |_env| [200, {"Set-Cookie" => "id=1; path=/oauth/token; secure; HttpOnly"}, ["Hello there"]] },
+      paths: ["/oauth/token"]
+    )
+
+    _, headers, = app.call({"PATH_INFO" => "/oauth/token", "HTTP_COOKIE" => "id=1"})
+    _(headers["Set-Cookie"]).must_be_nil
+    _(headers["cookies-stripped"]).must_equal "true"
   end
 
   it "cleans the cookie on all other paths" do

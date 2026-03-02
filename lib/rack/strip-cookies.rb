@@ -50,8 +50,10 @@ module Rack
         # This returns the HTTP status, headers, and body of the response.
         status, headers, body = @app.call(env)
 
-        # Remove the 'Set-Cookie' header from the response headers.
-        headers.delete("set-cookie")
+        # Remove any case variant of the 'Set-Cookie' header from the response headers.
+        headers.keys.each do |header_name|
+          headers.delete(header_name) if header_name.to_s.casecmp?("set-cookie")
+        end
 
         # Add a custom header 'Cookies-Stripped' to indicate that cookies were stripped.
         headers["cookies-stripped"] = "true"

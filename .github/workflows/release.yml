@@ -5,13 +5,25 @@ on:
     tags:
       - v*
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
-      - name: Release Gem
-        uses: cadwallion/publish-rubygems-action@master
-        env:
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          bundler-cache: true
+
+      - uses: rubygems/configure-rubygems-credentials@main
+
+      - name: Publish gem
+        run: |
+          gem build rack-strip-cookies.gemspec
+          gem push pkg/*.gem

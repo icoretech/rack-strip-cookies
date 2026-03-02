@@ -27,4 +27,4 @@ jobs:
         run: gem build rack-strip-cookies.gemspec
 
       - name: Publish gem
-        run: gem push pkg/*.gem
+        run: gem push rack-strip-cookies-*.gem

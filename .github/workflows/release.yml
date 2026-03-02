@@ -23,7 +23,8 @@ jobs:
 
       - uses: rubygems/configure-rubygems-credentials@main
 
+      - name: Build gem
+        run: gem build rack-strip-cookies.gemspec
+
       - name: Publish gem
-        run: |
-          gem build rack-strip-cookies.gemspec
-          gem push pkg/*.gem
+        run: gem push pkg/*.gem

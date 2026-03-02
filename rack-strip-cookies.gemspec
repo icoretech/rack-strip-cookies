@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Claudio Poli"]
   spec.email = ["claudio@icorete.ch"]
   spec.summary = "Rack middleware to remove cookies at user-defined paths."
-  spec.description = "A lightweight Rack middleware that strips specified cookies from incoming requests, useful for reducing cookie bloat on static asset paths."
+  spec.description = "Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths, including support for wildcard patterns. This allows for flexible and selective cookie management across various parts of your application."
   spec.homepage = "http://github.com/icoretech/rack-strip-cookies"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"

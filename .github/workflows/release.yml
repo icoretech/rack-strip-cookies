@@ -33,14 +33,14 @@ jobs:
   publish-gem:
     runs-on: ubuntu-latest
     needs: release-please
-    if: needs.release-please.outputs.release_created == 'true' || github.event.inputs.tag != ''
+    if: needs.release-please.outputs.release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.inputs.tag || needs.release-please.outputs.tag_name }}
+          ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
 
       - uses: ruby/setup-ruby@v1
         with:

@@ -1,7 +1,7 @@
 # lib/rack/strip-cookies.rb
 module Rack
   class StripCookies
-    attr_reader :app, :patterns, :invert
+    attr_reader :app, :patterns, :invert, :expose_header
 
     # Initializes the middleware.
     #
@@ -14,6 +14,7 @@ module Rack
     def initialize(app, options = {})
       @app = app
       @invert = options.fetch(:invert, false)
+      @expose_header = options.fetch(:expose_header, false)
       @patterns = compile_patterns(options[:paths] || [])
     end
 
@@ -31,7 +32,8 @@ module Rack
       path = env["PATH_INFO"] || "/"
 
       # Determine if the current path matches any of the compiled patterns.
-      # Each pattern is a regex that represents either an exact match or a wildcard match.
+      # Non-wildcard paths match both the exact path and any descendant path.
+      # Wildcard paths only match descendant paths.
       matched = patterns.any? { |regex| regex.match?(path) }
 
       # Decide whether to strip cookies based on the matching result and the invert flag.
@@ -55,8 +57,8 @@ module Rack
           headers.delete(header_name) if header_name.to_s.casecmp?("set-cookie")
         end
 
-        # Add a custom header 'Cookies-Stripped' to indicate that cookies were stripped.
-        headers["cookies-stripped"] = "true"
+        # Expose the stripping decision only when explicitly enabled.
+        headers["cookies-stripped"] = "true" if expose_header
       else
         # If cookies are not to be stripped, simply call the next middleware or application.
         # The original request and response headers remain untouched.
@@ -80,9 +82,12 @@ module Rack
           # Wildcard pattern: "/api/*" -> matches "/api/" and "/api/anything"
           prefix = Regexp.escape(path.chomp("/*"))
           Regexp.new("^#{prefix}/.*$")
+        elsif path == "/"
+          # Root path matches every Rack path.
+          %r{\A/.*\z}
         else
-          # Exact match pattern: "/api" -> matches only "/api"
-          Regexp.new("^#{Regexp.escape(path)}$")
+          # Base path pattern: "/api" -> matches "/api" and "/api/anything"
+          Regexp.new("^#{Regexp.escape(path)}(?:$|/.*)")
         end
       end
     end

@@ -43,7 +43,7 @@ describe Rack::StripCookies do
 
     get "http://www.example.org/oauth/token"
     _(last_response.headers["set-cookie"]).must_be_nil
-    _(last_response.headers["cookies-stripped"]).must_equal "true"
+    _(last_response.headers["cookies-stripped"]).must_be_nil
   end
 
   it "cleans the cookie when response hash uses Set-Cookie casing" do
@@ -54,7 +54,15 @@ describe Rack::StripCookies do
 
     _, headers, = app.call({"PATH_INFO" => "/oauth/token", "HTTP_COOKIE" => "id=1"})
     _(headers["Set-Cookie"]).must_be_nil
-    _(headers["cookies-stripped"]).must_equal "true"
+    _(headers["cookies-stripped"]).must_be_nil
+  end
+
+  it "exposes the stripping header only when explicitly enabled" do
+    mock_app(paths: ["/oauth/token"], expose_header: true)
+
+    get "http://www.example.org/oauth/token"
+    _(last_response.headers["set-cookie"]).must_be_nil
+    _(last_response.headers["cookies-stripped"]).must_equal "true"
   end
 
   it "cleans the cookie on all other paths" do
@@ -62,7 +70,7 @@ describe Rack::StripCookies do
 
     get "http://www.example.org/outh#{rand(10)}"
     _(last_response.headers["set-cookie"]).must_be_nil
-    _(last_response.headers["cookies-stripped"]).must_equal "true"
+    _(last_response.headers["cookies-stripped"]).must_be_nil
   end
 
   it "doesn't clean the cookie on the given path" do
@@ -78,7 +86,7 @@ describe Rack::StripCookies do
 
     get "http://www.example.org/oauth/token"
     _(last_response.headers["set-cookie"]).must_be_nil
-    _(last_response.headers["cookies-stripped"]).must_equal "true"
+    _(last_response.headers["cookies-stripped"]).must_be_nil
   end
 
   it "does not clean the cookie when paths are empty" do
@@ -96,7 +104,7 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/api/test1"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
     it "does not clean the cookie for the exact path when a wildcard pattern is specified" do
@@ -112,11 +120,11 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/api/v1/users"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       get "http://www.example.org/admin/settings"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
     it "does not clean cookies for paths not matching any wildcard patterns" do
@@ -133,16 +141,16 @@ describe Rack::StripCookies do
       # Exact path "/api" should strip cookies
       get "http://www.example.org/api"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       # Subpath "/admin/settings" should strip cookies
       get "http://www.example.org/admin/settings"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
-      # Path "/api/v1" should not strip cookies (no wildcard for "/api/*")
+      # Base path "/api" should also cover its subpaths for backwards compatibility
       get "http://www.example.org/api/v1"
-      _(last_response.headers["set-cookie"]).must_equal "id=1; path=/api/v1; secure; HttpOnly"
+      _(last_response.headers["set-cookie"]).must_be_nil
       _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
@@ -151,7 +159,7 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/public/images"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
     it "does not clean cookies for wildcard patterns with invert: true" do
@@ -167,11 +175,11 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/api/v1/users"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       get "http://www.example.org/api/v2/orders"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
     it "handles paths with trailing slashes correctly" do
@@ -179,11 +187,11 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/api/v1/"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       get "http://www.example.org/api/"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
     end
 
     it "handles paths with query parameters correctly" do
@@ -191,7 +199,7 @@ describe Rack::StripCookies do
 
       get "http://www.example.org/api/v1/users?active=true"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       get "http://www.example.org/api?user=1"
       _(last_response.headers["set-cookie"]).must_equal "id=1; path=/api; secure; HttpOnly"
@@ -214,12 +222,12 @@ describe Rack::StripCookies do
       # Exact path "/api" should strip cookies
       get "http://www.example.org/api"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       # Subpath "/admin/settings" should strip cookies
       get "http://www.example.org/admin/settings"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       # Path "/admin" should not strip cookies
       get "http://www.example.org/admin"
@@ -233,11 +241,11 @@ describe Rack::StripCookies do
       # Paths not matching "/public/*" or "/docs/*" should strip cookies
       get "http://www.example.org/home"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       get "http://www.example.org/contact"
       _(last_response.headers["set-cookie"]).must_be_nil
-      _(last_response.headers["cookies-stripped"]).must_equal "true"
+      _(last_response.headers["cookies-stripped"]).must_be_nil
 
       # Paths matching "/public/*" should not strip cookies
       get "http://www.example.org/public/images"

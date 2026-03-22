@@ -1,6 +1,6 @@
 # Rack::StripCookies
 
-Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths, including support for wildcard patterns. This allows for flexible and selective cookie management across various parts of your application.
+Rack::StripCookies is a straightforward Rack middleware that deletes cookies at designated paths, including support for wildcard patterns. Base paths cover both the exact path and its subpaths, while wildcard patterns cover subpaths only. This allows for flexible and selective cookie management across various parts of your application.
 
 [![Gem Version](https://badge.fury.io/rb/rack-strip-cookies.svg)](https://badge.fury.io/rb/rack-strip-cookies)
 ![Git Tag](http://img.shields.io/github/tag/icoretech/rack-strip-cookies.svg)
@@ -21,6 +21,7 @@ Rack::StripCookies is a straightforward Rack middleware that deletes cookies at 
     - [Wildcard Path Patterns](#wildcard-path-patterns)
     - [Inverting Path Matching](#inverting-path-matching)
     - [Multiple Paths](#multiple-paths)
+    - [Optional Diagnostic Header](#optional-diagnostic-header)
   - [Combining with Other Middleware](#combining-with-other-middleware)
 - [Running Tests Locally](#running-tests-locally)
 - [How to Contribute](#how-to-contribute)
@@ -80,7 +81,7 @@ run app
 **Explanation:**
 
 - The middleware is configured to strip cookies for the `/dashboard` path.
-- When a request is made to `/dashboard`, cookies will be stripped from both the request and response.
+- When a request is made to `/dashboard` or one of its subpaths, cookies will be stripped from both the request and response.
 
 ### Integrating with Ruby on Rails
 
@@ -148,7 +149,7 @@ end
 **Explanation:**
 
 - The middleware is set to strip cookies for the `/admin` path.
-- Requests to `/admin` will have cookies removed from both the request and response.
+- Requests to `/admin` and its subpaths will have cookies removed from both the request and response.
 
 ### Using with Padrino
 
@@ -171,7 +172,7 @@ end
 
 #### Wildcard Path Patterns
 
-You can define wildcard patterns to strip cookies from multiple subpaths matching a specific pattern.
+You can define wildcard patterns to strip cookies from subpaths matching a specific pattern without affecting the base path itself.
 
 ```ruby
 use Rack::StripCookies, paths: ['/api/*', '/admin/*']
@@ -179,8 +180,8 @@ use Rack::StripCookies, paths: ['/api/*', '/admin/*']
 
 **Explanation:**
 
-- **`/api/*`**: Strips cookies from `/api/`, `/api/users`, `/api/v1/orders`, etc.
-- **`/admin/*`**: Strips cookies from `/admin/`, `/admin/settings`, `/admin/users/list`, etc.
+- **`/api/*`**: Strips cookies from `/api/`, `/api/users`, `/api/v1/orders`, etc., but not from `/api`.
+- **`/admin/*`**: Strips cookies from `/admin/`, `/admin/settings`, `/admin/users/list`, etc., but not from `/admin`.
 
 **Example Usage with Wildcards:**
 
@@ -210,11 +211,11 @@ use Rack::StripCookies, paths: ['/public/*', '/health'], invert: true
 
 **Explanation:**
 
-- Cookies will be stripped from all paths **except** those matching `/public/*` (e.g., `/public/images`, `/public/css`) and the exact path `/health`.
+- Cookies will be stripped from all paths **except** those matching `/public/*` (e.g., `/public/images`, `/public/css`) and `/health` plus its subpaths.
 
 #### Multiple Paths
 
-Specify multiple exact paths and wildcard patterns where cookies should be stripped.
+Specify multiple base paths and wildcard patterns where cookies should be stripped.
 
 ```ruby
 use Rack::StripCookies, paths: ['/login', '/signup', '/dashboard/*']
@@ -222,7 +223,15 @@ use Rack::StripCookies, paths: ['/login', '/signup', '/dashboard/*']
 
 **Explanation:**
 
-- Cookies will be stripped from `/login`, `/signup`, and any subpath under `/dashboard/` (e.g., `/dashboard/settings`, `/dashboard/profile`).
+- Cookies will be stripped from `/login` and `/signup` plus their subpaths, and from any subpath under `/dashboard/` (e.g., `/dashboard/settings`, `/dashboard/profile`) without affecting the exact `/dashboard` path.
+
+#### Optional Diagnostic Header
+
+If you want the middleware to expose when stripping occurred, you can opt into the `cookies-stripped` response header.
+
+```ruby
+use Rack::StripCookies, paths: ['/oauth/token'], expose_header: true
+```
 
 ### Combining with Other Middleware
 

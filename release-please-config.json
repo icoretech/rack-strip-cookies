@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "034e19bbb6f6414ca41126753743596336ab2262",
+  "release-type": "ruby",
+  "include-v-in-tag": true,
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {
+      "version-file": "lib/rack/strip-cookies/version.rb",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
